@@ -4,7 +4,7 @@ on:
     inputs:
       BRANCH:
         description: Kernel branch
-        default: 'android-4.19'
+        default: 'master'
         required: true
       TARGET_DEVICE:
         description: 'Device'
@@ -26,9 +26,6 @@ on:
       KBUILD_LLVM:
         description: Build with LLVM
         type: boolean
-      CLANG_THIRTEEN:
-        description: Build with Clang 13
-        type: boolean
         
 jobs:
   build:
@@ -37,7 +34,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        repository: rsuntkOrgs/kernel_samsung_exynos850
+        repository: rsuntk/upstream_exynos850
         path: kernel_root
         ref: ${{ github.event.inputs.BRANCH }}
         show-progress: false
@@ -53,14 +50,10 @@ jobs:
       run: |
         mkdir toolchains
         cd toolchains
-        if [[ "${{ github.event.inputs.CLANG_THIRTEEN }}" = "true" ]]; then
-          URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/llvm-r450784/clang-r433403.tar.gz"
-          #URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android13-gsi/clang-r450784d.tar.gz"
-          echo "[+] Fetching clang 13"
-          mkdir clang && cd clang && wget -q -O clang.tar.gz $URL && tar -xf clang.tar.gz && rm *.gz && cd ..
-        else
-          git clone --depth=1 https://github.com/rsuntk/toolchains.git -b clang-12 clang
-        fi
+        URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/llvm-r450784/clang-r433403.tar.gz"
+        #URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android13-gsi/clang-r450784d.tar.gz"
+        echo "[+] Fetching clang 13"
+        mkdir clang && cd clang && wget -q -O clang.tar.gz $URL && tar -xf clang.tar.gz && rm *.gz && cd ..
         git clone --depth=1 https://gitlab.com/Rissu-Projekt/toolchains/aarch64-linux-android.git google
       working-directory: kernel_root
     - name: Prepare timezone fix
@@ -84,12 +77,6 @@ jobs:
         export DEVICE_ID="A12s"
         export PLATFORM_VERSION=13
         export KERNELSU="${{ github.event.inputs.KSU }}"
-
-        if [[ "${{ github.event.inputs.KBUILD_LLVM }}" = "true" ]]; then
-          echo "[+] Building with LLVM=1 ..."
-          export LLVM=1
-          #export LLVM_IAS=1
-        fi
 
         if [[ "${{ github.event.inputs.SELINUX_PERMISSIVE }}" = "true" ]]; then
           cd security && rm -rf selinux
