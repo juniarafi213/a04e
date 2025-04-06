@@ -4,7 +4,7 @@ on:
     inputs:
       BRANCH:
         description: Kernel branch
-        default: 'master'
+        default: 'staging'
         required: true
       TARGET_DEVICE:
         description: 'Device'
@@ -34,7 +34,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        repository: rsuntk/upstream_exynos850
+        repository: rsuntkOrgs/exynos850_ports
         path: kernel_root
         ref: ${{ github.event.inputs.BRANCH }}
         show-progress: false
@@ -72,7 +72,7 @@ jobs:
         export KBUILD_BUILD_HOST="rsuntkOrgs"
         export BUILD_START=`date`
         export IS_CI=true
-        export DEFCONFIG="exynos850-a12snsxx_defconfig"
+        export DEFCONFIG="a12s_defconfig"
         export DEVICE="A127F"
         export DEVICE_ID="A12s"
         export PLATFORM_VERSION=13
