@@ -148,6 +148,7 @@ jobs:
       if: github.event.inputs.BUILD_TARGET == 'kernel'
       run: |
         rm out/vmlinux.o out/vmlinux out/System.map
+      working-directory: kernel_root
         
     - name: Upload to Telegram
       if: github.event.inputs.UPLOAD_TO_TG == 'true' && github.event.inputs.BUILD_TARGET == 'kernel'
